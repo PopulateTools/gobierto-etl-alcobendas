@@ -2,11 +2,11 @@ email = "popu-servers+jenkins@populate.tools "
 pipeline {
     agent any
     environment {
-        FOLDER = "gobierto_etl_alcobendas_contracts"
+        FOLDER = "licitaciones"
         PATH = "$HOME/.rbenv/shims:$PATH"
         ETL_UTILS = "/var/www/gobierto-etl-utils/current/"
-        DATASET_NAME = "Contratos"
-        DATASET_SLUG = "contratos"
+        DATASET_NAME = "Licitaciones"
+        DATASET_SLUG = "licitaciones"
         DATASET_TABLE_NAME = "${FOLDER}"
         // Variables that must be defined via Jenkins UI:
         // GOBIERTO_DATA_SOURCE_URL = ""
@@ -14,15 +14,15 @@ pipeline {
         // ETL = "/var/www/gobierto-etl-alcobendas/current/"
     }
     stages {
-        stage('Import contratos') {
+        stage('Import licitaciones') {
             steps {
               sh '''#!/bin/bash
                 source ${ETL}/.rbenv-vars;
                 cd ${ETL_UTILS};
                 QUERY=`cat $ETL/pipelines/datasets/${FOLDER}/query.sql | jq -s -R -r @uri`
-                FILEURL=$GOBIERTO_DATA_SOURCE_URL"/api/v1/data/data.csv?token="$GOBIERTO_READ_API_TOKEN"&sql="$QUERY
+                FILEURL=$GOBIERTO_DATA_SOURCE_URL"/api/v1/data/data.csv?token="$API_TOKEN"&sql="$QUERY
                 ruby operations/gobierto_data/upload-dataset/run.rb \
-                  --api-token $GOBIERTO_WRITE_API_TOKEN \
+                  --api-token $API_TOKEN \
                   --name "$DATASET_NAME" \
                   --slug $DATASET_SLUG \
                   --table-name $DATASET_TABLE_NAME \
@@ -43,4 +43,5 @@ pipeline {
         }
     }
 }
+
 
